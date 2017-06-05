@@ -5,7 +5,6 @@
 package main
 
 import (
-	"auth"
 	"context"
 	"encoding/json"
 	"flag"

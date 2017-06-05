@@ -13,7 +13,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/lazyhacker.com/youtube-copy/auth"
+	"github.com/lazyhacker/youtube-copy/auth"
 	"github.com/lazyhacker/youtube-copy/yt"
 )
 

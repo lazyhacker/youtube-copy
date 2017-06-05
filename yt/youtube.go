@@ -1,3 +1,5 @@
+// Package yt is a wrapper around the Youtube Data API for creating new
+// playlists, add videos to a playlist and subscribing to channels.
 package yt
 
 import (

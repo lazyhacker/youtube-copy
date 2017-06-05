@@ -1,3 +1,4 @@
+// Package auth handles settings up oAuth2 for talking to Youtube's Data APIs.
 package auth
 
 import (

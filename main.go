@@ -1,5 +1,7 @@
-// Sample Go code for user authorization
-
+// youtube-copy reads JSON files from Google Takeout for Youtube playlists and
+// subscriptions and using the Youtube Data APIs adds them to your Youtube
+// account.  It can be use to copy info from one account to another or as a way
+// to restore a backup.
 package main
 
 import (

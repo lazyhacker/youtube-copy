@@ -5,14 +5,16 @@
 package main
 
 import (
+	"auth"
 	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
-	"youtube-copy/auth"
-	"youtube-copy/yt"
+
+	"github.com/lazyhacker.com/youtube-copy/auth"
+	"github.com/lazyhacker/youtube-copy/yt"
 )
 
 type Subscriptions []struct {

@@ -11,8 +11,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"yttransfer/auth"
-	"yttransfer/yt"
+	"youtube-copy/auth"
+	"youtube-copy/yt"
 )
 
 type Subscriptions []struct {

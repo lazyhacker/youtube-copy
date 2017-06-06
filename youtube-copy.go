@@ -12,8 +12,8 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/lazyhacker/youtube-copy/auth"
-	"github.com/lazyhacker/youtube-copy/yt"
+	"lazyhackergo.com/youtube-copy/auth"
+	"lazyhackergo.com/youtube-copy/yt"
 )
 
 type Subscriptions []struct {

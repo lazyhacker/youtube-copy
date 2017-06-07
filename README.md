@@ -17,9 +17,7 @@ Using Google Takeout, download your playlist and subscriptions in JSON format.
 
 ## Installing
 
-`go get -insecure lazyhackergo.com/youtube-copy`
-
-** Until I get https on lazyhackergo.com, please use the -insecure flag **
+`go get lazyhackergo.com/youtube-copy`
 
 ## Disclaimer
 

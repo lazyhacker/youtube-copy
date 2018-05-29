@@ -2,7 +2,7 @@
 // subscriptions and using the Youtube Data APIs adds them to your Youtube
 // account.  It can be use to copy info from one account to another or as a way
 // to restore a backup.
-package main
+package main // import "lazyhackergo.com/youtube-copy"
 
 import (
 	"context"

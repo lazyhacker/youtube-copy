@@ -1,5 +1,5 @@
 // Package auth handles settings up oAuth2 for talking to Youtube's Data APIs.
-package auth // import "lazyhackergo.com/youtube-copy/auth"
+package auth // import "lazyhacker.dev/youtube-copy/auth"
 
 import (
 	"bufio"

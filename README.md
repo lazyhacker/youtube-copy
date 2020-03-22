@@ -17,7 +17,7 @@ Using Google Takeout, download your playlist and subscriptions in JSON format.
 
 ## Installing
 
-`go get lazyhackergo.com/youtube-copy`
+`go get lazyhacker.dev/youtube-copy`
 
 ## Disclaimer
 

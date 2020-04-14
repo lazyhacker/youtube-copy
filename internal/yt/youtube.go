@@ -1,6 +1,6 @@
 // Package yt is a wrapper around the Youtube Data API for creating new
 // playlists, add videos to a playlist and subscribing to channels.
-package yt
+package yt // import "lazyhacker.dev/youtube-copy/internal-yt"
 
 import (
 	"encoding/json"

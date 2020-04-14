@@ -12,6 +12,91 @@ import (
 	youtube "google.golang.org/api/youtube/v3"
 )
 
+type Subscriptions []struct {
+	ContentDetails struct {
+		ActivityType   string `json:"activityType"`
+		NewItemCount   int64  `json:"newItemCount"`
+		TotalItemCount int64  `json:"totalItemCount"`
+	} `json:"contentDetails"`
+	Etag    string `json:"etag"`
+	ID      string `json:"id"`
+	Kind    string `json:"kind"`
+	Snippet struct {
+		ChannelID   string `json:"channelId"`
+		Description string `json:"description"`
+		PublishedAt string `json:"publishedAt"`
+		ResourceID  struct {
+			ChannelID string `json:"channelId"`
+			Kind      string `json:"kind"`
+		} `json:"resourceId"`
+		Thumbnails struct {
+			Default struct {
+				URL string `json:"url"`
+			} `json:"default"`
+			High struct {
+				URL string `json:"url"`
+			} `json:"high"`
+			Medium struct {
+				URL string `json:"url"`
+			} `json:"medium"`
+		} `json:"thumbnails"`
+		Title string `json:"title"`
+	} `json:"snippet"`
+}
+
+type Playlist []struct {
+	ContentDetails struct {
+		VideoID          string `json:"videoId"`
+		VideoPublishedAt string `json:"videoPublishedAt"`
+	} `json:"contentDetails"`
+	Etag    string `json:"etag"`
+	ID      string `json:"id"`
+	Kind    string `json:"kind"`
+	Snippet struct {
+		ChannelID    string `json:"channelId"`
+		ChannelTitle string `json:"channelTitle"`
+		Description  string `json:"description"`
+		PlaylistID   string `json:"playlistId"`
+		Position     int64  `json:"position"`
+		PublishedAt  string `json:"publishedAt"`
+		ResourceID   struct {
+			Kind    string `json:"kind"`
+			VideoID string `json:"videoId"`
+		} `json:"resourceId"`
+		Thumbnails struct {
+			Default struct {
+				Height int64  `json:"height"`
+				URL    string `json:"url"`
+				Width  int64  `json:"width"`
+			} `json:"default"`
+			High struct {
+				Height int64  `json:"height"`
+				URL    string `json:"url"`
+				Width  int64  `json:"width"`
+			} `json:"high"`
+			Maxres struct {
+				Height int64  `json:"height"`
+				URL    string `json:"url"`
+				Width  int64  `json:"width"`
+			} `json:"maxres"`
+			Medium struct {
+				Height int64  `json:"height"`
+				URL    string `json:"url"`
+				Width  int64  `json:"width"`
+			} `json:"medium"`
+			Standard struct {
+				Height int64  `json:"height"`
+				URL    string `json:"url"`
+				Width  int64  `json:"width"`
+			} `json:"standard"`
+		} `json:"thumbnails"`
+		Title string `json:"title"`
+	} `json:"snippet"`
+	Status struct {
+		PrivacyStatus string `json:"privacyStatus"`
+	} `json:"status"`
+}
+
 func handleError(err error, message string) {
 	if message == "" {
 		message = "Error making API call"

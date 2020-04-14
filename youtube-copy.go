@@ -5,101 +5,17 @@
 package main // import "lazyhacker.dev/youtube-copy"
 
 import (
-	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"os"
+	"log"
 
-	"lazyhacker.dev/youtube-copy/auth"
-	"lazyhacker.dev/youtube-copy/yt"
+	"golang.org/x/oauth2"
+	youtube "google.golang.org/api/youtube/v3"
+	"lazyhacker.dev/gclientauth"
+	"lazyhacker.dev/youtube-copy/internal/yt"
 )
-
-type Subscriptions []struct {
-	ContentDetails struct {
-		ActivityType   string `json:"activityType"`
-		NewItemCount   int64  `json:"newItemCount"`
-		TotalItemCount int64  `json:"totalItemCount"`
-	} `json:"contentDetails"`
-	Etag    string `json:"etag"`
-	ID      string `json:"id"`
-	Kind    string `json:"kind"`
-	Snippet struct {
-		ChannelID   string `json:"channelId"`
-		Description string `json:"description"`
-		PublishedAt string `json:"publishedAt"`
-		ResourceID  struct {
-			ChannelID string `json:"channelId"`
-			Kind      string `json:"kind"`
-		} `json:"resourceId"`
-		Thumbnails struct {
-			Default struct {
-				URL string `json:"url"`
-			} `json:"default"`
-			High struct {
-				URL string `json:"url"`
-			} `json:"high"`
-			Medium struct {
-				URL string `json:"url"`
-			} `json:"medium"`
-		} `json:"thumbnails"`
-		Title string `json:"title"`
-	} `json:"snippet"`
-}
-
-type Playlist []struct {
-	ContentDetails struct {
-		VideoID          string `json:"videoId"`
-		VideoPublishedAt string `json:"videoPublishedAt"`
-	} `json:"contentDetails"`
-	Etag    string `json:"etag"`
-	ID      string `json:"id"`
-	Kind    string `json:"kind"`
-	Snippet struct {
-		ChannelID    string `json:"channelId"`
-		ChannelTitle string `json:"channelTitle"`
-		Description  string `json:"description"`
-		PlaylistID   string `json:"playlistId"`
-		Position     int64  `json:"position"`
-		PublishedAt  string `json:"publishedAt"`
-		ResourceID   struct {
-			Kind    string `json:"kind"`
-			VideoID string `json:"videoId"`
-		} `json:"resourceId"`
-		Thumbnails struct {
-			Default struct {
-				Height int64  `json:"height"`
-				URL    string `json:"url"`
-				Width  int64  `json:"width"`
-			} `json:"default"`
-			High struct {
-				Height int64  `json:"height"`
-				URL    string `json:"url"`
-				Width  int64  `json:"width"`
-			} `json:"high"`
-			Maxres struct {
-				Height int64  `json:"height"`
-				URL    string `json:"url"`
-				Width  int64  `json:"width"`
-			} `json:"maxres"`
-			Medium struct {
-				Height int64  `json:"height"`
-				URL    string `json:"url"`
-				Width  int64  `json:"width"`
-			} `json:"medium"`
-			Standard struct {
-				Height int64  `json:"height"`
-				URL    string `json:"url"`
-				Width  int64  `json:"width"`
-			} `json:"standard"`
-		} `json:"thumbnails"`
-		Title string `json:"title"`
-	} `json:"snippet"`
-	Status struct {
-		PrivacyStatus string `json:"privacyStatus"`
-	} `json:"status"`
-}
 
 var (
 	clientSecretsFile = flag.String("secrets", "cs.json", "Client Secrets configuration")
@@ -112,47 +28,51 @@ var (
 func main() {
 	flag.Parse()
 
-	oa := auth.SecretsToken{
-		ClientSecretsFile: clientSecretsFile,
-		CacheFile:         cacheFile,
+	scopes := []string{youtube.YoutubeForceSslScope}
+
+	ctx := oauth2.NoContext
+	token, config, err := gclientauth.GetGoogleOauth2Token(ctx, *clientSecretsFile, *cacheFile, scopes, false, "8081")
+	if err != nil {
+		log.Fatalf("Fetching oAuth token failed.\n%v", err)
+	}
+	cfg := config.Client(ctx, token)
+	defer cfg.CloseIdleConnections()
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	ctx := context.WithValue(context.Background(), auth.CtxKey, oa)
-	service, err := auth.Authenticate(ctx)
+	service, err := youtube.New(cfg)
+
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Fatalln(err)
 	}
 
 	var raw []byte
 	raw, err = ioutil.ReadFile(*file)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Fatalln(err)
 	}
 
-	fmt.Println("Staring transfer")
+	fmt.Println("Starting transfer")
 	switch *transferType {
 	case "subscription":
 
-		var data Subscriptions
+		var data yt.Subscriptions
 
 		if err := json.Unmarshal(raw, &data); err != nil {
-			fmt.Printf("Unable to parse JSON. %v\n", err)
-			os.Exit(1)
+			log.Fatalf("Unable to parse JSON. %v\n", err)
 		}
 
 		for i, v := range data {
-			fmt.Printf("%d %v\n", i, v.Snippet.ResourceID.ChannelID)
+			log.Printf("%d %v\n", i, v.Snippet.ResourceID.ChannelID)
 			yt.Subscribe(service, v.Snippet.ResourceID.ChannelID)
 		}
 
 	case "playlist":
 
-		var data Playlist
+		var data yt.Playlist
 		if err := json.Unmarshal(raw, &data); err != nil {
-			fmt.Printf("Unable to parse JSON. %v\n", err)
-			os.Exit(1)
+			log.Fatalf("Unable to parse JSON. %v\n", err)
 		}
 
 		playlistID := yt.CreatePlaylist(service, *playlist, "", "private")
@@ -162,7 +82,6 @@ func main() {
 			fmt.Printf("%d %v\n", i, v.ContentDetails.VideoID)
 			yt.AddVideoToPlaylist(service, playlistID, v.ContentDetails.VideoID)
 		}
-
 	default:
 		fmt.Println("Unknow type.")
 	}
